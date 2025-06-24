@@ -77,6 +77,16 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
+        ) : activeSection === 'Shop' ? (
+          // Shop Page Layout
+          <div className="min-h-[70vh]">
+            <h2 className="text-4xl font-bold text-green-900 mb-8">Shop</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="bg-[#F4F9E7] rounded-xl shadow-md w-[180px] h-[220px] mx-auto" />
+              ))}
+            </div>
+          </div>
         ) : (
           // Home Section (default)
           <>
