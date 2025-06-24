@@ -4,11 +4,8 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { signOut } from 'next-auth/react';
-import { FaLeaf, FaSeedling, FaTree, FaChartLine } from 'react-icons/fa';
+import { FaLeaf, FaClock, FaShoppingCart, FaChartBar } from 'react-icons/fa';
 import Link from 'next/link';
-import SettingsPage from '../../components/SettingsPage';
-import ProfilePage from '../../components/ProfilePage';
-import LeaderboardPage from '../../components/LeaderboardPage';
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
@@ -30,162 +27,127 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#E8F3D6]">
       {/* Navigation Bar */}
-      <nav className="bg-white shadow-sm border-b border-gray-200">
+      <nav className="bg-[#E8F3D6] border-b border-green-200 py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <FaLeaf className="h-8 w-8 text-green-600 mr-2" />
-              <h1 className="text-xl font-semibold text-gray-800">Spriggly Garden</h1>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-8">
+              <div className="flex items-center">
+                <FaLeaf className="h-6 w-6 text-green-600" />
+                <span className="ml-2 text-xl font-semibold text-green-800">Spriggly</span>
+              </div>
+              <div className="flex space-x-6">
+                <button onClick={() => setActiveSection('Home')} className={`text-green-800 hover:text-green-600 focus:outline-none ${activeSection === 'Home' ? 'font-bold' : ''}`}>Home</button>
+                <button onClick={() => setActiveSection('Grow')} className={`text-green-800 hover:text-green-600 focus:outline-none ${activeSection === 'Grow' ? 'font-bold' : ''}`}>Grow</button>
+                <button onClick={() => setActiveSection('Plants')} className={`text-green-800 hover:text-green-600 focus:outline-none ${activeSection === 'Plants' ? 'font-bold' : ''}`}>Plants</button>
+                <button onClick={() => setActiveSection('Shop')} className={`text-green-800 hover:text-green-600 focus:outline-none ${activeSection === 'Shop' ? 'font-bold' : ''}`}>Shop</button>
+              </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-600">Welcome, {session?.user?.name}</span>
-              <button
-                onClick={() => signOut({ callbackUrl: '/login' })}
-                className="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
-              >
-                Sign out
-              </button>
+            <div className="flex items-center space-x-6">
+              <div className="relative">
+                <button className="text-green-800 hover:text-green-600 focus:outline-none">Notifications
+                  <span className="absolute -top-1 -right-2 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">1</span>
+                </button>
+              </div>
+              <button className="text-green-800 hover:text-green-600 focus:outline-none">Profile</button>
+              <button className="text-green-800 hover:text-green-600 focus:outline-none">Settings</button>
             </div>
-          </div>
-          {/* Dashboard Navigation Bar (just below Spriggly Garden) */}
-          <div className="flex justify-center items-center gap-8">
-            <button
-              className={`px-4 py-2 rounded-md font-semibold focus:outline-none transition-colors text-blue-700 hover:bg-blue-100 ${activeSection === 'Home' ? 'bg-blue-100' : ''}`}
-              onClick={() => setActiveSection('Home')}
-              type="button"
-            >
-              Home
-            </button>
-            <button
-              className={`px-4 py-2 rounded-md font-semibold focus:outline-none transition-colors text-blue-700 hover:bg-blue-100 ${activeSection === 'Marketplace' ? 'bg-blue-100' : ''}`}
-              onClick={() => setActiveSection('Marketplace')}
-              type="button"
-            >
-              Marketplace
-            </button>
-            <button
-              className={`px-4 py-2 rounded-md font-semibold focus:outline-none transition-colors text-blue-700 hover:bg-blue-100 ${activeSection === 'Leaderboard' ? 'bg-blue-100' : ''}`}
-              onClick={() => setActiveSection('Leaderboard')}
-              type="button"
-            >
-              Leaderboard
-            </button>
-            <button
-              className={`px-4 py-2 rounded-md font-semibold focus:outline-none transition-colors text-blue-700 hover:bg-blue-100 ${activeSection === 'Profile' ? 'bg-blue-100' : ''}`}
-              onClick={() => setActiveSection('Profile')}
-              type="button"
-            >
-              Profile
-            </button>
-            <button
-              className={`px-4 py-2 rounded-md font-semibold focus:outline-none transition-colors text-blue-700 hover:bg-blue-100 ${activeSection === 'Settings' ? 'bg-blue-100' : ''}`}
-              onClick={() => setActiveSection('Settings')}
-              type="button"
-            >
-              Settings
-            </button>
           </div>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {activeSection === 'Settings' ? (
-          <SettingsPage />
-        ) : activeSection === 'Profile' ? (
-          <ProfilePage user={session?.user} />
-        ) : activeSection === 'Leaderboard' ? (
-          <LeaderboardPage />
+      <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        {activeSection === 'Plants' ? (
+          // Plants Collection Layout
+          <div className="flex flex-col md:flex-row gap-8 min-h-[70vh]">
+            <div className="flex-1 flex items-center justify-center">
+              <div className="bg-[#F4F9E7] rounded-2xl shadow-md p-8 w-full h-[400px] max-w-[500px] flex flex-col justify-end relative">
+                <div className="absolute left-1/2 bottom-8 transform -translate-x-1/2">
+                  <div className="bg-[#F8FFB0] rounded-lg shadow-md w-[320px] h-[140px]" />
+                </div>
+              </div>
+            </div>
+            <div className="flex-1 flex flex-col justify-center">
+              <h2 className="text-4xl font-bold text-green-900 mb-8">Collection</h2>
+              <div className="grid grid-cols-2 gap-8">
+                {[0,1,2,3].map((i) => (
+                  <div key={i} className="bg-[#F4F9E7] rounded-xl shadow-md w-[180px] h-[220px]" />
+                ))}
+              </div>
+            </div>
+          </div>
         ) : (
+          // Home Section (default)
           <>
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-                <div className="flex items-center">
-                  <div className="p-3 rounded-full bg-green-100 text-green-600">
-                    <FaSeedling className="h-6 w-6" />
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Total Plants</p>
-                    <p className="text-2xl font-semibold text-gray-900">24</p>
-                  </div>
+            {/* Welcome Section */}
+            <div className="bg-[#F4F9E7] rounded-2xl p-8 mb-8">
+              <h1 className="text-3xl font-bold text-green-800 mb-2">Welcome back! <FaLeaf className="inline-block text-green-600" /></h1>
+              <p className="text-gray-600 mb-8">You have # of task</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="bg-white rounded-xl p-6 shadow-sm">
+                  <h3 className="text-gray-600 mb-2">Tasks Completed</h3>
+                  <p className="text-4xl font-bold text-green-800">12</p>
                 </div>
-              </div>
-              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-                <div className="flex items-center">
-                  <div className="p-3 rounded-full bg-blue-100 text-blue-600">
-                    <FaTree className="h-6 w-6" />
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Mature Plants</p>
-                    <p className="text-2xl font-semibold text-gray-900">12</p>
-                  </div>
+                <div className="bg-white rounded-xl p-6 shadow-sm">
+                  <h3 className="text-gray-600 mb-2">Focus Time Today</h3>
+                  <p className="text-4xl font-bold text-green-800">145 min</p>
+                  <button className="mt-2 bg-green-700 text-white px-4 py-1 rounded-lg text-sm">
+                    Start Focus Session
+                  </button>
                 </div>
-              </div>
-              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-                <div className="flex items-center">
-                  <div className="p-3 rounded-full bg-yellow-100 text-yellow-600">
-                    <FaChartLine className="h-6 w-6" />
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Growth Rate</p>
-                    <p className="text-2xl font-semibold text-gray-900">+15%</p>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-                <div className="flex items-center">
-                  <div className="p-3 rounded-full bg-purple-100 text-purple-600">
-                    <FaLeaf className="h-6 w-6" />
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Harvest Ready</p>
-                    <p className="text-2xl font-semibold text-gray-900">8</p>
+                <div className="bg-white rounded-xl p-6 shadow-sm">
+                  <h3 className="text-gray-600 mb-2">Plant Growth</h3>
+                  <p className="text-4xl font-bold text-green-800">75</p>
+                  <div className="w-full bg-green-200 rounded-full h-2 mt-2">
+                    <div className="bg-green-600 h-2 rounded-full" style={{ width: '75%' }}></div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Main Content */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Garden Overview */}
-              <div className="lg:col-span-2 bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">Garden Overview</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Today's Tasks */}
+              <div className="bg-[#F4F9E7] rounded-2xl p-8">
+                <h2 className="text-2xl font-bold text-green-800 mb-6">Today's Tasks</h2>
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div>
-                      <h3 className="font-medium text-gray-800">Tomato Plants</h3>
-                      <p className="text-sm text-gray-600">Ready in 3 days</p>
-                    </div>
-                    <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Growing</span>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div>
-                      <h3 className="font-medium text-gray-800">Carrots</h3>
-                      <p className="text-sm text-gray-600">Ready in 5 days</p>
-                    </div>
-                    <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">Seeding</span>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div>
-                      <h3 className="font-medium text-gray-800">Lettuce</h3>
-                      <p className="text-sm text-gray-600">Ready to harvest</p>
-                    </div>
-                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Harvest</span>
+                  <div className="flex items-center">
+                    <input type="checkbox" className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500" />
                   </div>
                 </div>
               </div>
 
               {/* Quick Actions */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
-                <div className="space-y-3">
-                  <button className="w-full bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
-                    Plant New Seeds
+              <div className="bg-[#F4F9E7] rounded-2xl p-8">
+                <h2 className="text-2xl font-bold text-green-800 mb-6">Quick Actions</h2>
+                <div className="space-y-4">
+                  <button className="w-full bg-white hover:bg-gray-50 text-left px-6 py-4 rounded-xl flex items-center space-x-4 transition-colors">
+                    <FaClock className="h-5 w-5 text-green-600" />
+                    <div>
+                      <p className="font-semibold text-green-800">Start Focus Session</p>
+                      <p className="text-sm text-gray-500">Begin a timed work session</p>
+                    </div>
                   </button>
-                  <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
-                    Water Plants
+                  <button className="w-full bg-white hover:bg-gray-50 text-left px-6 py-4 rounded-xl flex items-center space-x-4 transition-colors">
+                    <FaLeaf className="h-5 w-5 text-green-600" />
+                    <div>
+                      <p className="font-semibold text-green-800">Check My Plants</p>
+                      <p className="text-sm text-gray-500">See your garden progress</p>
+                    </div>
+                  </button>
+                  <button className="w-full bg-white hover:bg-gray-50 text-left px-6 py-4 rounded-xl flex items-center space-x-4 transition-colors">
+                    <FaShoppingCart className="h-5 w-5 text-green-600" />
+                    <div>
+                      <p className="font-semibold text-green-800">Visit Marketplace</p>
+                      <p className="text-sm text-gray-500">Spend your earned coins</p>
+                    </div>
+                  </button>
+                  <button className="w-full bg-white hover:bg-gray-50 text-left px-6 py-4 rounded-xl flex items-center space-x-4 transition-colors">
+                    <FaChartBar className="h-5 w-5 text-green-600" />
+                    <div>
+                      <p className="font-semibold text-green-800">View Analytics</p>
+                      <p className="text-sm text-gray-500">Track your productivity</p>
+                    </div>
                   </button>
                 </div>
               </div>
