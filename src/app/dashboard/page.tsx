@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { signOut } from 'next-auth/react';
 import { FaLeaf, FaClock, FaShoppingCart, FaChartBar } from 'react-icons/fa';
 import Link from 'next/link';
@@ -11,6 +11,59 @@ export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [activeSection, setActiveSection] = useState('Home');
+
+  // Pomodoro Timer State
+  const initialTime = 30; // 30 seconds for testing
+  const [timeLeft, setTimeLeft] = useState(initialTime);
+  const [isRunning, setIsRunning] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Plant growth stage: 0 = seedling, 1 = sprout, 2 = grown
+  const getPlantStage = () => {
+    const percent = 1 - timeLeft / initialTime;
+    if (percent < 0.33) return 0;
+    if (percent < 0.66) return 1;
+    return 2;
+  };
+  const plantStages = [
+    <span key="seedling" style={{fontSize: '3rem'}} role="img" aria-label="seedling">🌱</span>,
+    <span key="sprout" style={{fontSize: '3rem'}} role="img" aria-label="sprout">🌿</span>,
+    <span key="grown" style={{fontSize: '3rem'}} role="img" aria-label="grown">🌳</span>,
+  ];
+
+  useEffect(() => {
+    if (isRunning && timeLeft > 0) {
+      intervalRef.current = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+    } else if (!isRunning && intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    if (timeLeft === 0 && intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+      setIsRunning(false);
+    }
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [isRunning, timeLeft]);
+
+  const handleStart = () => {
+    if (!isRunning && timeLeft > 0) {
+      setIsRunning(true);
+    }
+  };
+  const handleReset = () => {
+    setIsRunning(false);
+    setTimeLeft(initialTime);
+  };
+  const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+  const seconds = String(timeLeft % 60).padStart(2, '0');
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -85,6 +138,56 @@ export default function DashboardPage() {
               {[...Array(8)].map((_, i) => (
                 <div key={i} className="bg-[#F4F9E7] rounded-xl shadow-md w-[180px] h-[220px] mx-auto" />
               ))}
+            </div>
+          </div>
+        ) : activeSection === 'Grow' ? (
+          // Grow Page Layout (Match Screenshot UI)
+          <div className="flex flex-col min-h-[70vh]">
+            <div className="flex flex-col md:flex-row gap-8">
+              {/* Pomodoro Timer (Left) */}
+              <div className="flex-1 flex items-stretch">
+                <div className="bg-[#F4F9E7] rounded-2xl shadow-lg p-8 w-full flex flex-col justify-start min-h-[500px] border border-[#d3e2b6]">
+                  <h2 className="text-3xl md:text-4xl font-extrabold mb-8 text-black">Start Focus Session</h2>
+                  <div className="flex flex-col items-center mt-2">
+                    <div className="bg-[#bfc7a1] rounded-xl p-8 flex flex-col items-center w-[340px] max-w-full">
+                      <h3 className="text-lg font-bold text-[#3b5c2e] mb-2">Pomodoro Timer</h3>
+                      <div className="mb-4">{plantStages[getPlantStage()]}</div>
+                      <div className="text-5xl font-extrabold text-[#23411a] mb-6">{minutes}:{seconds}</div>
+                      <div className="flex space-x-4">
+                        <button onClick={handleStart} disabled={isRunning} className={`bg-[#23411a] hover:bg-[#2e6b2e] text-white px-7 py-2 rounded-lg font-bold text-lg ${isRunning ? 'opacity-50 cursor-not-allowed' : ''}`}>Start</button>
+                        <button onClick={handleReset} className="bg-[#e74c3c] hover:bg-[#c0392b] text-white px-7 py-2 rounded-lg font-bold text-lg">Surrender</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* Task List (Right) */}
+              <div className="flex-1 flex items-stretch">
+                <div className="bg-[#F4F9E7] rounded-2xl shadow-lg p-8 w-full flex flex-col min-h-[500px] border border-[#d3e2b6]">
+                  <h2 className="text-3xl md:text-4xl font-extrabold mb-4 text-black">task list</h2>
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="font-semibold text-black">Today's Tasks</span>
+                    <button className="bg-[#23411a] hover:bg-[#2e6b2e] text-white px-4 py-2 rounded-lg text-sm font-bold">+ Add Task</button>
+                  </div>
+                  <div className="border-2 border-blue-400 rounded-lg p-4 flex items-center justify-between bg-[#bfc7a1]">
+                    <input type="checkbox" className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500 mr-4" />
+                    <div className="flex-1"></div>
+                    <button className="text-gray-700 font-bold mr-4">Edit</button>
+                    <button className="text-red-600 font-bold">Delete</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* Plant Collection (Full width, below) */}
+            <div className="mt-8">
+              <h2 className="text-3xl md:text-4xl font-extrabold mb-4 text-black">plant collection</h2>
+              <div className="overflow-x-auto pb-4">
+                <div className="flex space-x-8 min-w-max">
+                  {[0,1,2,3,4,5].map((i) => (
+                    <div key={i} className="bg-[#F4F9E7] rounded-xl shadow-lg w-[260px] h-[260px] flex-shrink-0 border border-[#d3e2b6]" />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         ) : (
